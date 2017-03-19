@@ -76,7 +76,7 @@ public class Controller {
         return follow;
     }
     @RequestMapping(value = "messages", method = RequestMethod.GET)
-    public @ResponseBody Map following(@RequestParam(value="search", defaultValue="") String search) {
+    public @ResponseBody Map messages(@RequestParam(value="search", defaultValue="") String search) {
         User logged_in = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BaseUser user = userDAO.getUserInfo(logged_in.getUsername());
         Map messages = new HashMap<String, List>();
