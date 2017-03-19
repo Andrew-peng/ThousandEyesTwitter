@@ -39,17 +39,25 @@ public class Controller {
         System.out.println(person.getName());
         //POST DATA is json that includes id and name or just name
         User logged_in = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //ASSUME NO ID 0 PERSON
-        if (person.getId() > 0) {
-            userDAO.follow(person.getId(), userDAO.getId(logged_in.getUsername()));
-        } else {
-            userDAO.follow(userDAO.getId(person.getName()), userDAO.getId(logged_in.getUsername()));
-        }
-        BaseUser user = userDAO.getUserInfo(logged_in.getUsername());
         Map follow = new HashMap<String, List>();
-        follow.put("followers", user.getFollowers());
-        follow.put("following", user.getFollowing());
-        return follow;
+        BaseUser user = userDAO.getUserInfo(logged_in.getUsername());
+        if (user.getFollowing().contains(person.getName())) {
+            follow.put("followers", user.getFollowers());
+            follow.put("following", user.getFollowing());
+            return follow;
+        } else {
+            //ASSUME NO ID 0 PERSON
+            if (person.getId() > 0) {
+                userDAO.follow(person.getId(), userDAO.getId(logged_in.getUsername()));
+            } else {
+                userDAO.follow(userDAO.getId(person.getName()), userDAO.getId(logged_in.getUsername()));
+            }
+            user = userDAO.getUserInfo(logged_in.getUsername());
+            follow.put("followers", user.getFollowers());
+            follow.put("following", user.getFollowing());
+            return follow;  
+        }
+        
     }
     @RequestMapping(value = "followers/unfollow", method = RequestMethod.POST, consumes = {"application/json"})
     public @ResponseBody Map unfollow(@RequestBody Person person) {
